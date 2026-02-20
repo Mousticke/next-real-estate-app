@@ -175,13 +175,13 @@ export default async function PropertyPage({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <StatBadge
                 icon={Bed}
-                value={property.bedrooms}
+                value={property.bedrooms ?? 0}
                 label="Bedrooms"
                 color="primary"
               />
               <StatBadge
                 icon={Bath}
-                value={property.bathrooms}
+                value={property.bathrooms ?? 0}
                 label="Bathrooms"
                 color="secondary"
               />

@@ -64,6 +64,7 @@ export const agent = defineType({
       title: "Created At",
       type: "datetime",
       initialValue: () => new Date().toISOString(),
+      validation: (Rule) => Rule.required(),
     }),
   ],
   preview: {

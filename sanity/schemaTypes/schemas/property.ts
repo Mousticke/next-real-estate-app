@@ -66,19 +66,19 @@ export const property = defineType({
       name: "bedrooms",
       title: "Bedrooms",
       type: "number",
-      validation: (Rule) => Rule.min(0),
+      validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
       name: "bathrooms",
       title: "Bathrooms",
       type: "number",
-      validation: (Rule) => Rule.min(0),
+      validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
       name: "squareFeet",
       title: "Square Feet",
       type: "number",
-      validation: (Rule) => Rule.min(0),
+      validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
       name: "yearBuilt",
@@ -183,6 +183,7 @@ export const property = defineType({
       title: "Created At",
       type: "datetime",
       initialValue: () => new Date().toISOString(),
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "updatedAt",

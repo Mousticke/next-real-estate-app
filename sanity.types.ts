@@ -446,9 +446,10 @@ export type AGENT_LEADS_QUERYResult = Array<{
   } | null;
 }>;
 // Variable: USER_PROFILE_QUERY
-// Query: *[_type == "user" && clerkId == $clerkId][0] {    _id,    name,    email,    phone,    photo {   asset->{    _id,    url,    metadata { lqip, dimensions }  },  alt },    createdAt  }
+// Query: *[_type == "user" && clerkId == $clerkId][0] {    _id,    clerkId,    name,    email,    phone,    photo {   asset->{    _id,    url,    metadata { lqip, dimensions }  },  alt },    createdAt  }
 export type USER_PROFILE_QUERYResult = {
   _id: string;
+  clerkId: string | null;
   name: string | null;
   email: string | null;
   phone: string | null;
@@ -691,7 +692,7 @@ declare module "@sanity/client" {
     "\n  *[_type == \"property\" && _id == $id][0] {\n    _id,\n    title,\n    description,\n    price,\n    propertyType,\n    status,\n    bedrooms,\n    bathrooms,\n    squareFeet,\n    yearBuilt,\n    address,\n    location,\n    images[] { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n    amenities,\n    agent-> {\n      _id,\n      userId,\n      name,\n      email,\n      phone,\n      photo { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n      bio,\n      agency\n    }\n  }\n": PROPERTY_DETAIL_QUERYResult;
     "\n  *[_type == \"property\" && agent._ref == $agentId] | order(createdAt desc) {\n    _id,\n    title,\n    \"slug\": slug.current,\n    price,\n    status,\n    bedrooms,\n    bathrooms,\n    \"image\": images[0] { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n    createdAt\n  }\n": AGENT_LISTINGS_QUERYResult;
     "\n  *[_type == \"lead\" && agent._ref == $agentId] | order(createdAt desc) {\n    _id,\n    buyerName,\n    buyerEmail,\n    buyerPhone,\n    status,\n    createdAt,\n    property-> {\n      _id,\n      title,\n      \"slug\": slug.current\n    }\n  }\n": AGENT_LEADS_QUERYResult;
-    "\n  *[_type == \"user\" && clerkId == $clerkId][0] {\n    _id,\n    name,\n    email,\n    phone,\n    photo { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n    createdAt\n  }\n": USER_PROFILE_QUERYResult;
+    "\n  *[_type == \"user\" && clerkId == $clerkId][0] {\n    _id,\n    clerkId,\n    name,\n    email,\n    phone,\n    photo { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n    createdAt\n  }\n": USER_PROFILE_QUERYResult;
     "\n  *[_type == \"user\" && clerkId == $clerkId][0]{ _id }\n": USER_EXISTS_QUERYResult;
     "\n  *[_type == \"agent\" && userId == $userId][0] {\n    _id,\n    name,\n    email,\n    phone,\n    photo { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n    bio,\n    licenseNumber,\n    agency,\n    onboardingComplete\n  }\n": AGENT_PROFILE_QUERYResult;
     "\n  *[_type == \"agent\" && userId == $userId][0] {\n    _id,\n    userId,\n    name,\n    email,\n    onboardingComplete\n  }\n": AGENT_BY_USER_ID_QUERYResult;

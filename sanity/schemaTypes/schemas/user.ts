@@ -9,7 +9,7 @@ export const user = defineType({
       name: "clerkId",
       title: "Clerk ID",
       type: "string",
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().min(0),
       readOnly: true,
     }),
     defineField({
@@ -53,6 +53,7 @@ export const user = defineType({
       title: "Created At",
       type: "datetime",
       initialValue: () => new Date().toISOString(),
+      validation: (Rule) => Rule.required(),
     }),
   ],
   preview: {
