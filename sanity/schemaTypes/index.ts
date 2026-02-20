@@ -1,4 +1,4 @@
-import { type SchemaTypeDefinition } from "sanity";
+  import { type SchemaTypeDefinition } from "sanity";
 import { agent } from "./schemas/agent";
 import { amenity } from "./schemas/amenity";
 import { lead } from "./schemas/lead";

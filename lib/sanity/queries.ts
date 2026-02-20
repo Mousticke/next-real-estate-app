@@ -50,6 +50,8 @@ export const PROPERTIES_SEARCH_QUERY = defineQuery(/* groq */ `
     "slug": slug.current,
     price,
     originalPrice,
+    propertyType,
+    status,
     bedrooms,
     bathrooms,
     squareFeet,
