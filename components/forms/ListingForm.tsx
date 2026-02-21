@@ -46,9 +46,13 @@ const STATUS_OPTIONS = [
   { value: "sold", label: "Sold" },
 ];
 
-// Re-export Amenity type from shared types
-import type { Amenity } from "@/types";
-export type { Amenity };
+import type {
+  AMENITIES_QUERYResult,
+  LISTING_BY_ID_QUERYResult,
+} from "@/sanity.types";
+
+/** Single amenity from Sanity AMENITIES_QUERY (for form options). */
+export type AmenityOption = AMENITIES_QUERYResult[number];
 
 const formSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
@@ -77,41 +81,12 @@ type FormDataInput = z.input<typeof formSchema>;
 // Output type: what validation produces (coerced to proper types)
 type FormDataOutput = z.output<typeof formSchema>;
 
-interface ListingImage {
-  asset: {
-    _id: string;
-    url: string;
-  };
-}
-
-interface GeoPoint {
-  lat: number;
-  lng: number;
-}
+/** Map-compatible location (optional lat/lng); compatible with Sanity Geopoint. */
+type MapLocation = { lat?: number; lng?: number };
 
 interface ListingFormProps {
-  listing?: {
-    _id: string;
-    title: string;
-    description?: string;
-    price: number;
-    propertyType: string;
-    status: string;
-    bedrooms: number;
-    bathrooms: number;
-    squareFeet: number;
-    yearBuilt?: number;
-    address?: {
-      street?: string;
-      city?: string;
-      state?: string;
-      zipCode?: string;
-    };
-    location?: GeoPoint;
-    amenities?: string[];
-    images?: ListingImage[];
-  };
-  amenities: Amenity[];
+  listing?: NonNullable<LISTING_BY_ID_QUERYResult>;
+  amenities: AMENITIES_QUERYResult;
   mode?: "create" | "edit";
 }
 
@@ -122,17 +97,19 @@ export function ListingForm({
 }: ListingFormProps) {
   const [isPending, startTransition] = useTransition();
 
-  // Initialize images from listing data
+  // Initialize images from listing data (filter out images without asset)
   const initialImages: ImageItem[] =
-    listing?.images?.map((img) => ({
-      id: img.asset._id,
-      url: img.asset.url,
-      assetRef: img.asset._id,
-    })) || [];
+    listing?.images
+      ?.filter((img): img is typeof img & { asset: NonNullable<typeof img.asset> } => img.asset != null)
+      ?.map((img) => ({
+        id: img.asset._id,
+        url: img.asset.url ?? "",
+        assetRef: img.asset._id,
+      })) ?? [];
 
   const [images, setImages] = useState<ImageItem[]>(initialImages);
-  const [location, setLocation] = useState<GeoPoint | undefined>(
-    listing?.location,
+  const [location, setLocation] = useState<MapLocation | undefined>(
+    listing?.location ?? undefined,
   );
 
   // Build initial address display value for edit mode
@@ -195,7 +172,7 @@ export function ListingForm({
   };
 
   // Sync location picker changes back (for manual adjustments)
-  const handleLocationChange = (newLocation: GeoPoint) => {
+  const handleLocationChange = (newLocation: { lat: number; lng: number }) => {
     setLocation(newLocation);
   };
 
@@ -230,7 +207,10 @@ export function ListingForm({
             state: data.state,
             zipCode: data.zipCode,
           },
-          location,
+          location:
+            location != null && location.lat != null && location.lng != null
+              ? { lat: location.lat, lng: location.lng }
+              : undefined,
           amenities: data.amenities,
           images: imageRefs,
         };
@@ -512,39 +492,37 @@ export function ListingForm({
                 <FormItem>
                   {amenities.length > 0 ? (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {amenities.map((amenity) => (
-                        <div
-                          key={amenity._id}
-                          className="flex items-center space-x-2"
-                        >
-                          <Checkbox
-                            id={amenity.value}
-                            checked={field.value?.includes(amenity.value)}
-                            onCheckedChange={(checked: boolean) => {
-                              const currentValue = field.value || [];
-                              if (checked) {
-                                field.onChange([
-                                  ...currentValue,
-                                  amenity.value,
-                                ]);
-                              } else {
-                                field.onChange(
-                                  currentValue.filter(
-                                    (v) => v !== amenity.value,
-                                  ),
-                                );
-                              }
-                            }}
-                            disabled={isPending}
-                          />
-                          <label
-                            htmlFor={amenity.value}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      {amenities.map((amenity) => {
+                        const value = amenity.value ?? "";
+                        return (
+                          <div
+                            key={amenity._id}
+                            className="flex items-center space-x-2"
                           >
-                            {amenity.label}
-                          </label>
-                        </div>
-                      ))}
+                            <Checkbox
+                              id={value || amenity._id}
+                              checked={field.value?.includes(value)}
+                              onCheckedChange={(checked: boolean) => {
+                                const currentValue = field.value || [];
+                                if (checked) {
+                                  field.onChange([...currentValue, value]);
+                                } else {
+                                  field.onChange(
+                                    currentValue.filter((v) => v !== value),
+                                  );
+                                }
+                              }}
+                              disabled={isPending}
+                            />
+                            <label
+                              htmlFor={value || amenity._id}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            >
+                              {amenity.label ?? ""}
+                            </label>
+                          </div>
+                        );
+                      })}
                     </div>
                   ) : (
                     <p className="text-sm text-muted-foreground">

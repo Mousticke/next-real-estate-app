@@ -5,12 +5,16 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import type { SanityImage } from "@/types";
+import type { PROPERTY_DETAIL_QUERYResult } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 
+type PropertyDetailImage = NonNullable<
+  NonNullable<PROPERTY_DETAIL_QUERYResult>["images"]
+>[number];
+
 interface ImageGalleryProps {
-  images: SanityImage[];
-  title: string;
+  images: PropertyDetailImage[];
+  title: string | null;
 }
 
 export function ImageGallery({ images, title }: ImageGalleryProps) {
@@ -76,11 +80,13 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           >
             <Image
               src={urlFor(images[selectedIndex]).width(1200).height(675).url()}
-              alt={images[selectedIndex].alt || title}
+              alt={images[selectedIndex].alt ?? title ?? ""}
               fill
               sizes="(max-width: 1024px) 100vw, 66vw"
               className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
               priority
+              placeholder={images[selectedIndex].asset?.metadata?.lqip ? "blur" : "empty"}
+              blurDataURL={images[selectedIndex].asset?.metadata?.lqip ?? undefined}
             />
             {/* Hover Overlay */}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-[background-color] duration-300 flex items-center justify-center">
@@ -136,7 +142,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           >
             {images.map((image, index) => (
               <button
-                key={image.asset?._id || index}
+                key={image._key ?? image.asset?._id ?? index}
                 type="button"
                 onClick={() => setSelectedIndex(index)}
                 role="option"
@@ -150,10 +156,12 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
               >
                 <Image
                   src={urlFor(image).width(112).height(80).url()}
-                  alt={image.alt || `${title} - Image ${index + 1}`}
+                  alt={image.alt ?? `${title ?? ""} - Image ${index + 1}`}
                   fill
                   sizes="112px"
                   className="object-cover"
+                  placeholder={image.asset?.metadata?.lqip ? "blur" : "empty"}
+                  blurDataURL={image.asset?.metadata?.lqip ?? undefined}
                 />
               </button>
             ))}
@@ -174,10 +182,12 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
           >
             <Image
               src={urlFor(images[selectedIndex]).width(1920).height(1080).url()}
-              alt={images[selectedIndex].alt || title}
+              alt={images[selectedIndex].alt ?? title ?? ""}
               fill
               sizes="100vw"
               className="object-contain"
+              placeholder={images[selectedIndex].asset?.metadata?.lqip ? "blur" : "empty"}
+              blurDataURL={images[selectedIndex].asset?.metadata?.lqip ?? undefined}
             />
 
             {/* Navigation */}

@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import MapGL, { Marker, NavigationControl, Popup } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import type { Property } from "@/types";
+import type { PROPERTIES_SEARCH_QUERYResult } from "@/sanity.types";
+
+type PropertySearchItem = PROPERTIES_SEARCH_QUERYResult[number];
 
 interface MapViewProps {
-  properties: Property[];
-  onPropertyClick?: (property: Property) => void;
+  properties: PROPERTIES_SEARCH_QUERYResult;
+  onPropertyClick?: (property: PropertySearchItem) => void;
   className?: string;
 }
 
@@ -17,7 +19,7 @@ export function MapView({
   onPropertyClick,
   className,
 }: MapViewProps) {
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(
+  const [selectedProperty, setSelectedProperty] = useState<PropertySearchItem | null>(
     null,
   );
   const [viewState, setViewState] = useState({
@@ -50,7 +52,7 @@ export function MapView({
   }, [validProperties]);
 
   const handleMarkerClick = useCallback(
-    (property: Property) => {
+    (property: PropertySearchItem) => {
       setSelectedProperty(property);
       if (onPropertyClick) {
         onPropertyClick(property);
@@ -91,7 +93,7 @@ export function MapView({
           >
             <div className="cursor-pointer">
               <div className="bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs font-semibold shadow-md hover:bg-primary/90 transition-colors">
-                {formatPrice(property.price)}
+                {formatPrice(property.price ?? 0)}
               </div>
             </div>
           </Marker>
@@ -112,16 +114,16 @@ export function MapView({
               className="block p-2 min-w-[200px] hover:bg-muted/50 transition-colors rounded-md cursor-pointer"
             >
               <h3 className="font-semibold text-sm">
-                {selectedProperty.title}
+                {selectedProperty.title ?? ""}
               </h3>
               <p className="text-lg font-bold text-primary">
-                {formatPrice(selectedProperty.price)}
+                {formatPrice(selectedProperty.price ?? 0)}
               </p>
               <div className="flex gap-2 text-xs text-muted-foreground mt-1">
-                <span>{selectedProperty.bedrooms} beds</span>
+                <span>{selectedProperty.bedrooms ?? 0} beds</span>
                 <span>•</span>
-                <span>{selectedProperty.bathrooms} baths</span>
-                {selectedProperty.squareFeet && (
+                <span>{selectedProperty.bathrooms ?? 0} baths</span>
+                {selectedProperty.squareFeet != null && (
                   <>
                     <span>•</span>
                     <span>
@@ -132,8 +134,8 @@ export function MapView({
               </div>
               {selectedProperty.address && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  {selectedProperty.address.city},{" "}
-                  {selectedProperty.address.state}
+                  {selectedProperty.address.city ?? ""},{" "}
+                  {selectedProperty.address.state ?? ""}
                 </p>
               )}
             </Link>

@@ -1,10 +1,10 @@
 "use client";
 
-import type { Property } from "@/types";
+import type { PROPERTIES_SEARCH_QUERYResult } from "@/sanity.types";
 import { PropertyCard } from "./PropertyCard";
 
 interface PropertyGridProps {
-  properties: Property[];
+  properties: PROPERTIES_SEARCH_QUERYResult;
   onSave?: (propertyId: string) => void;
   savedIds?: string[];
   showRemoveButton?: boolean;

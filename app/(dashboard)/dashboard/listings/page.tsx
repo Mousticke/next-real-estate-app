@@ -26,7 +26,6 @@ import {
   AGENT_ID_BY_USER_QUERY,
   AGENT_LISTINGS_QUERY,
 } from "@/lib/sanity/queries";
-import type { Property } from "@/types";
 import { sanityFetch } from "@/sanity/lib/live";
 import { urlFor } from "@/sanity/lib/image";
 

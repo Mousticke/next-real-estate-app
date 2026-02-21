@@ -16,7 +16,6 @@ import {
   AGENT_ID_BY_USER_QUERY,
   AGENT_LEADS_QUERY,
 } from "@/lib/sanity/queries";
-import type { Lead } from "@/types";
 import { sanityFetch } from "@/sanity/lib/live";
 
 export default async function LeadsPage() {

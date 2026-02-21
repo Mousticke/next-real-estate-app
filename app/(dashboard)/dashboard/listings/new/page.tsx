@@ -17,7 +17,7 @@ export default async function NewListingPage() {
         </p>
       </div>
 
-      <ListingForm amenities={amenities} />
+      <ListingForm amenities={amenities ?? []} />
     </div>
   );
 }

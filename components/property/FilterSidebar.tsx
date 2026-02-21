@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Amenity } from "@/types";
+import type { AMENITIES_QUERYResult } from "@/sanity.types";
 
 const PROPERTY_TYPES = [
   { value: "all", label: "All Types" },
@@ -58,7 +58,7 @@ const DAYS_ON_MARKET_OPTIONS = [
 ];
 
 interface FilterSidebarProps {
-  amenities: Amenity[];
+  amenities: AMENITIES_QUERYResult;
 }
 
 export function FilterSidebar({ amenities }: FilterSidebarProps) {
@@ -538,21 +538,21 @@ export function FilterSidebar({ amenities }: FilterSidebarProps) {
                 <div className="grid grid-cols-2 gap-2">
                   {amenities.map((amenity) => (
                     <div
-                      key={amenity.value}
+                      key={amenity.value ?? amenity._id}
                       className="flex items-center space-x-2"
                     >
                       <Checkbox
-                        id={`amenity-${amenity.value}`}
-                        checked={filters.amenities.includes(amenity.value)}
+                        id={`amenity-${amenity.value ?? amenity._id}`}
+                        checked={filters.amenities.includes(amenity.value ?? "")}
                         onCheckedChange={() =>
-                          handleAmenityToggle(amenity.value)
+                          handleAmenityToggle(amenity.value ?? "")
                         }
                       />
                       <Label
-                        htmlFor={`amenity-${amenity.value}`}
+                        htmlFor={`amenity-${amenity.value ?? amenity._id}`}
                         className="text-sm cursor-pointer font-normal"
                       >
-                        {amenity.label}
+                        {amenity.label ?? ""}
                       </Label>
                     </div>
                   ))}

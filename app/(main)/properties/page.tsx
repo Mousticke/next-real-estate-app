@@ -10,7 +10,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AMENITIES_QUERY, PROPERTIES_COUNT_QUERY, PROPERTIES_SEARCH_QUERY } from "@/lib/sanity/queries";
 import { sanityFetch } from "@/sanity/lib/live";
-import { Amenity, Property } from "@/types";
 
 export const metadata: Metadata = {
   title: "Browse Properties",
@@ -138,7 +137,7 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
           <aside className="lg:w-80 flex-shrink-0">
             <div className="lg:sticky lg:top-24">
               <Suspense fallback={<Skeleton className="h-[500px] w-full rounded-2xl" />}>
-                <FilterSidebar amenities={(amenities || []) as Amenity[]} />
+                <FilterSidebar amenities={amenities ?? []} />
               </Suspense>
             </div>
           </aside>
@@ -170,7 +169,7 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
               <TabsContent value="list" className="mt-0">
                 {properties && properties.length > 0 ? (
                   <>
-                    <PropertyGrid properties={properties as Property[]} />
+                    <PropertyGrid properties={properties ?? []} />
 
                     {/* Pagination */}
                     {totalPages > 1 && (
@@ -238,7 +237,7 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
 
               <TabsContent value="map" className="mt-0">
                 <div className="h-[600px] rounded-2xl overflow-hidden border border-border/50 shadow-warm">
-                  <DynamicMapView properties={(properties || []) as Property[]} />
+                  <DynamicMapView properties={properties ?? []} />
                 </div>
               </TabsContent>
             </Tabs>

@@ -49,7 +49,7 @@ export default async function EditListingPage({
         <p className="text-muted-foreground">Update your property details</p>
       </div>
 
-      <ListingForm listing={listing} amenities={amenities} mode="edit" />
+      <ListingForm listing={listing} amenities={amenities ?? []} mode="edit" />
     </div>
   );
 }

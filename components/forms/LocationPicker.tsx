@@ -4,11 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 import MapGL, { Marker, NavigationControl } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MapPin } from "lucide-react";
-import type { GeoPoint } from "@/types";
-
+/** Compatible with Sanity Geopoint (optional lat/lng); form state uses { lat, lng } without _type. */
 interface LocationPickerProps {
-  value?: GeoPoint;
-  onChange: (location: GeoPoint) => void;
+  value?: { lat?: number; lng?: number } | null;
+  onChange: (location: { lat: number; lng: number }) => void;
   disabled?: boolean;
 }
 
@@ -25,11 +24,11 @@ export function LocationPicker({
 
   // Sync viewState when value prop changes (e.g., from address autocomplete)
   useEffect(() => {
-    if (value) {
+    if (value && value.lat != null && value.lng != null) {
       setViewState((prev) => ({
         ...prev,
-        longitude: value.lng,
-        latitude: value.lat,
+        longitude: value.lng ?? prev.longitude,
+        latitude: value.lat ?? prev.latitude,
         zoom: 15, // Zoom in when address is selected
       }));
     }
@@ -69,7 +68,7 @@ export function LocationPicker({
         >
           <NavigationControl position="top-right" />
 
-          {value && (
+          {value && value.lat != null && value.lng != null && (
             <Marker longitude={value.lng} latitude={value.lat} anchor="bottom">
               <div className="text-primary">
                 <MapPin className="h-8 w-8 fill-primary stroke-white drop-shadow-lg" />
@@ -79,7 +78,7 @@ export function LocationPicker({
         </MapGL>
       </div>
 
-      {value ? (
+      {value && value.lat != null && value.lng != null ? (
         <p className="text-sm text-muted-foreground">
           📍 Selected: {value.lat.toFixed(6)}, {value.lng.toFixed(6)}
         </p>

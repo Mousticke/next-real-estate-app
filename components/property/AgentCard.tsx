@@ -4,11 +4,13 @@ import { Building, Mail, Phone } from "lucide-react";
 import type { ReactNode } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Agent } from "@/types";
+import type { PROPERTY_DETAIL_QUERYResult } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 
+type PropertyDetailAgent = NonNullable<NonNullable<PROPERTY_DETAIL_QUERYResult>["agent"]>;
+
 interface AgentCardProps {
-  agent: Agent;
+  agent: PropertyDetailAgent;
   children?: ReactNode;
 }
 
@@ -30,15 +32,15 @@ export function AgentCard({ agent, children }: AgentCardProps) {
             {agent.photo?.asset ? (
               <AvatarImage
                 src={urlFor(agent.photo).width(128).height(128).url()}
-                alt={agent.name}
+                alt={agent.name ?? ""}
               />
             ) : null}
             <AvatarFallback className="text-lg">
-              {getInitials(agent.name)}
+              {getInitials(agent.name ?? "")}
             </AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-semibold text-lg">{agent.name}</h3>
+            <h3 className="font-semibold text-lg">{agent.name ?? ""}</h3>
             {agent.agency && (
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Building className="h-4 w-4" />

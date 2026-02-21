@@ -1,18 +1,20 @@
 import { defineQuery } from "next-sanity";
 
-// Image fragment for reuse
+// Image fragment for reuse (include hotspot/crop for urlFor; LQIP for blur placeholders)
 const imageFragment = /* groq */ `
   asset->{
     _id,
     url,
     metadata { lqip, dimensions }
   },
-  alt
+  alt,
+  hotspot,
+  crop
 `;
 
-// Featured listings for homepage
+// Featured listings for homepage (order before slice for deterministic results)
 export const FEATURED_PROPERTIES_QUERY = defineQuery(/* groq */ `
-  *[_type == "property" && featured == true && status == "active"][0...6] {
+  *[_type == "property" && featured == true && status == "active"] | order(createdAt desc)[0...6] {
     _id,
     title,
     "slug": slug.current,
@@ -21,7 +23,7 @@ export const FEATURED_PROPERTIES_QUERY = defineQuery(/* groq */ `
     bathrooms,
     squareFeet,
     address,
-    "image": images[0] { ${imageFragment} },
+    "image": images[0] { _key, ${imageFragment} },
     location
   }
 `);
@@ -58,7 +60,7 @@ export const PROPERTIES_SEARCH_QUERY = defineQuery(/* groq */ `
     yearBuilt,
     lotSize,
     address,
-    "image": images[0] { ${imageFragment} },
+    "image": images[0] { _key, ${imageFragment} },
     location,
     amenities,
     openHouseDate,
@@ -102,7 +104,7 @@ export const PROPERTY_DETAIL_QUERY = defineQuery(/* groq */ `
     yearBuilt,
     address,
     location,
-    images[] { ${imageFragment} },
+    images[] { _key, ${imageFragment} },
     amenities,
     agent-> {
       _id,
@@ -127,7 +129,7 @@ export const AGENT_LISTINGS_QUERY = defineQuery(/* groq */ `
     status,
     bedrooms,
     bathrooms,
-    "image": images[0] { ${imageFragment} },
+    "image": images[0] { _key, ${imageFragment} },
     createdAt
   }
 `);
@@ -208,7 +210,7 @@ export const LISTING_BY_ID_QUERY = defineQuery(/* groq */ `
     yearBuilt,
     address,
     location,
-    images[] { ${imageFragment} },
+    images[] { _key, ${imageFragment} },
     amenities,
     agent
   }
@@ -226,7 +228,7 @@ export const USER_SAVED_LISTINGS_QUERY = defineQuery(/* groq */ `
       bathrooms,
       squareFeet,
       address,
-      "image": images[0] { ${imageFragment} },
+      "image": images[0] { _key, ${imageFragment} },
       status
     }
   }.savedListings

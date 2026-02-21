@@ -5,11 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Property } from "@/types";
+import type { PROPERTIES_SEARCH_QUERYResult } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 
+type PropertySearchItem = PROPERTIES_SEARCH_QUERYResult[number];
+
 interface PropertyCardProps {
-  property: Property;
+  property: PropertySearchItem;
   onSave?: (propertyId: string) => void;
   isSaved?: boolean;
   showRemoveButton?: boolean;
@@ -42,10 +44,12 @@ export function PropertyCard({ property, onSave, isSaved, showRemoveButton: _sho
           {property.image?.asset ? (
             <Image
               src={urlFor(property.image).width(600).height(450).url()}
-              alt={property.title}
+              alt={property.title ?? ""}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
+              placeholder={property.image.asset?.metadata?.lqip ? "blur" : "empty"}
+              blurDataURL={property.image.asset?.metadata?.lqip ?? undefined}
             />
           ) : (
             <div className="w-full h-full bg-muted flex items-center justify-center">
@@ -88,22 +92,22 @@ export function PropertyCard({ property, onSave, isSaved, showRemoveButton: _sho
         <div className="p-5">
           {/* Price */}
           <div className="flex items-start justify-between gap-2 mb-2">
-            <h3 className="font-bold font-heading text-xl tabular-nums">{formatPrice(property.price)}</h3>
+            <h3 className="font-bold font-heading text-xl tabular-nums">{formatPrice(property.price ?? 0)}</h3>
           </div>
 
           {/* Title */}
-          <p className="text-sm text-muted-foreground line-clamp-1 mb-4 min-w-0">{property.title}</p>
+          <p className="text-sm text-muted-foreground line-clamp-1 mb-4 min-w-0">{property.title ?? ""}</p>
 
           {/* Property Stats */}
           <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-            {property.bedrooms !== undefined && (
+            {property.bedrooms != null && (
               <div className="flex items-center gap-1.5">
                 <Bed className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                 <span className="tabular-nums">{property.bedrooms}</span>
                 <span className="sr-only sm:not-sr-only">&nbsp;beds</span>
               </div>
             )}
-            {property.bathrooms !== undefined && (
+            {property.bathrooms != null && (
               <div className="flex items-center gap-1.5">
                 <Bath className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                 <span className="tabular-nums">{property.bathrooms}</span>
@@ -124,7 +128,7 @@ export function PropertyCard({ property, onSave, isSaved, showRemoveButton: _sho
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
               <span className="line-clamp-1 min-w-0">
-                {property.address.city}, {property.address.state}
+                {property.address.city ?? ""}, {property.address.state ?? ""}
               </span>
             </div>
           )}
