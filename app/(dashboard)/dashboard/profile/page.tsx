@@ -13,6 +13,14 @@ export default async function AgentProfilePage() {
     params: { userId },
   });
 
+  if (!agent) {
+    return (
+      <div className="max-w-2xl">
+        <p className="text-muted-foreground">Agent profile not found.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
